@@ -1,61 +1,59 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>মেম্বার ডকুমেন্ট জমা ফর্ম</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f0f8ff; }
-    h2 { text-align: center; }
-    label { display: block; margin-top: 15px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; }
-    button { margin-top: 20px; padding: 10px; background-color: #007bff; color: white; border: none; width: 100%; font-size: 16px; }
-    .success { color: green; margin-top: 15px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>মেম্বার ডকুমেন্ট ফর্ম</title>
 </head>
-<body>
-  <h2>📄 মেম্বার ডকুমেন্ট জমা ফর্ম</h2>
-  <form id="docForm">
-    <label>Member Name / সদস্যের নাম:</label>
-    <select name="member" required>
-      <option value="">নির্বাচন করুন</option>
-      <option>মনজিরুল ইসলাম</option>
-      <option>প্রান্ত মন্ডল</option>
-      <option>শমিরন মন্ডল</option>
-      <option>তুফান</option>
-      <option>নিশিত</option>
-    </select>
+<body style="font-family:sans-serif;text-align:center;padding:30px;">
+  <h2>📄 মেম্বার ডকুমেন্ট সাবমিশন ফর্ম</h2>
 
-    <label>Google Spreadsheet Link / গুগল শিট লিংক:</label>
-    <input type="url" name="sheetLink" placeholder="https://docs.google.com/spreadsheets/..." required>
+  <form id="docForm">
+    <label for="member">মেম্বার নির্বাচন করুন / Select Member:</label><br/>
+    <select name="member" id="member" required>
+      <option value="">-- মেম্বার নির্বাচন করুন --</option>
+      <option value="মনজিরুল ইসলাম">মনজিরুল ইসলাম</option>
+      <option value="প্রান্ত মন্ডল">প্রান্ত মন্ডল</option>
+      <option value="শমিরন মন্ডল">শমিরন মন্ডল</option>
+      <option value="তুফান">তুফান</option>
+      <option value="নিশিত">নিশিত</option>
+    </select><br/><br/>
+
+    <label for="sheetLink">গুগল শিট লিংক দিন / Enter Google Sheet Link:</label><br/>
+    <input type="url" id="sheetLink" name="sheetLink" required placeholder="https://docs.google.com/..." style="width:80%;"/><br/><br/>
 
     <button type="submit">✅ সাবমিট করুন</button>
-    <div class="success" id="successMsg"></div>
   </form>
+
+  <p id="responseMsg" style="margin-top:20px;color:green;"></p>
 
   <script>
     const form = document.getElementById('docForm');
-    form.addEventListener('submit', async (e) => {
+    const responseMsg = document.getElementById('responseMsg');
+    const webhookURL = "https://script.google.com/macros/s/AKfycbwSlkJZp-9oSRz_nWboe3EjABycVhXxtPphN5SRAQgsTzqXt8eHM7jrxDNv8lvmgU/exec";
+
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(form);
-      const data = new URLSearchParams(formData);
-
-      const webhookURL = "YOUR_WEB_APP_URL_HERE"; // এখানে আপনার Apps Script Web URL বসান
-
-      try {
-        const res = await fetch(webhookURL, {
-          method: 'POST',
-          body: data,
-        });
-        if (res.ok) {
-          document.getElementById('successMsg').textContent = "✅ সফলভাবে জমা হয়েছে!";
-          form.reset();
-        } else {
-          alert("❌ সাবমিশনে সমস্যা হয়েছে!");
-        }
-      } catch (err) {
-        alert("⚠️ নেটওয়ার্ক বা সার্ভার সমস্যা!");
+      const data = new URLSearchParams();
+      for (const pair of formData) {
+        data.append(pair[0], pair[1]);
       }
+
+      fetch(webhookURL, {
+        method: "POST",
+        body: data,
+      })
+      .then(response => response.text())
+      .then(result => {
+        responseMsg.textContent = "✅ সফলভাবে সাবমিট হয়েছে!";
+        form.reset();
+      })
+      .catch(error => {
+        responseMsg.textContent = "❌ সাবমিশনে সমস্যা হয়েছে। আবার চেষ্টা করুন।";
+        console.error("Error!", error.message);
+      });
     });
   </script>
 </body>
-      </html>
+</html>
