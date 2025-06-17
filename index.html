@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>মেম্বার ডকুমেন্ট জমা ফর্ম</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f0f8ff; }
+    h2 { text-align: center; }
+    label { display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px; background-color: #007bff; color: white; border: none; width: 100%; font-size: 16px; }
+    .success { color: green; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>📄 মেম্বার ডকুমেন্ট জমা ফর্ম</h2>
+  <form id="docForm">
+    <label>Member Name / সদস্যের নাম:</label>
+    <select name="member" required>
+      <option value="">নির্বাচন করুন</option>
+      <option>মনজিরুল ইসলাম</option>
+      <option>প্রান্ত মন্ডল</option>
+      <option>শমিরন মন্ডল</option>
+      <option>তুফান</option>
+      <option>নিশিত</option>
+    </select>
+
+    <label>Google Spreadsheet Link / গুগল শিট লিংক:</label>
+    <input type="url" name="sheetLink" placeholder="https://docs.google.com/spreadsheets/..." required>
+
+    <button type="submit">✅ সাবমিট করুন</button>
+    <div class="success" id="successMsg"></div>
+  </form>
+
+  <script>
+    const form = document.getElementById('docForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = new URLSearchParams(formData);
+
+      const webhookURL = "YOUR_WEB_APP_URL_HERE"; // এখানে আপনার Apps Script Web URL বসান
+
+      try {
+        const res = await fetch(webhookURL, {
+          method: 'POST',
+          body: data,
+        });
+        if (res.ok) {
+          document.getElementById('successMsg').textContent = "✅ সফলভাবে জমা হয়েছে!";
+          form.reset();
+        } else {
+          alert("❌ সাবমিশনে সমস্যা হয়েছে!");
+        }
+      } catch (err) {
+        alert("⚠️ নেটওয়ার্ক বা সার্ভার সমস্যা!");
+      }
+    });
+  </script>
+</body>
+      </html>
